@@ -1,12 +1,10 @@
-import React, { useState, createContext } from 'react';
+import React, { useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { trpc } from './trpc';
+import { trpc } from './utils/trpc';
 
 interface Props {
 	children?: React.ReactNode;
 }
-
-export const TRPCContext = createContext<QueryClient | null>(null);
 
 export const TRPCProvider = ({ children }: Props) => {
 	const [queryClient] = useState(() => new QueryClient());
@@ -19,11 +17,7 @@ export const TRPCProvider = ({ children }: Props) => {
 
 	return (
 		<trpc.Provider client={trpcClient} queryClient={queryClient}>
-			<QueryClientProvider client={queryClient}>
-				<TRPCContext.Provider value={queryClient}>
-					{children}
-				</TRPCContext.Provider>
-			</QueryClientProvider>
+			<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 		</trpc.Provider>
 	);
 };

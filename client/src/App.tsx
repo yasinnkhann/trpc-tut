@@ -1,10 +1,8 @@
-import { useState, useContext } from 'react';
-import { QueryClient } from 'react-query';
-import { trpc } from './trpc';
-import { TRPCContext } from './TRPCProvider';
+import { useState } from 'react';
+import { trpc } from './utils/trpc';
 
 const App = () => {
-	const queryClient = useContext(TRPCContext) as QueryClient;
+	const utils = trpc.useContext();
 
 	const [user, setUser] = useState('');
 	const [message, setMessage] = useState('');
@@ -23,7 +21,7 @@ const App = () => {
 			},
 			{
 				onSuccess: () => {
-					queryClient.invalidateQueries(['get-messages']);
+					utils.invalidateQueries(['get-messages']);
 				},
 			}
 		);
