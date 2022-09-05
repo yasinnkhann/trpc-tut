@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { trpc } from './trpc';
-import './App.css';
 
 const client = new QueryClient();
 
@@ -30,7 +29,7 @@ const AppContent = () => {
 	};
 
 	return (
-		<div className='app'>
+		<div style={{ textAlign: 'center' }}>
 			<p>{JSON.stringify(hello.data)}</p>
 			{(getMessages.data ?? []).map((row: any, idx: number) => (
 				<div key={idx}>
