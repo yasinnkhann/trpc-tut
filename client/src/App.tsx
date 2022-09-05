@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { useState, useContext } from 'react';
+import { QueryClient } from 'react-query';
 import { trpc } from './trpc';
+import { TRPCContext } from './TRPCProvider';
 
-const client = new QueryClient();
+const App = () => {
+	const queryClient = useContext(TRPCContext) as QueryClient;
 
-const AppContent = () => {
 	const [user, setUser] = useState('');
 	const [message, setMessage] = useState('');
 
@@ -22,7 +23,7 @@ const AppContent = () => {
 			},
 			{
 				onSuccess: () => {
-					client.invalidateQueries(['get-messages']);
+					queryClient.invalidateQueries(['get-messages']);
 				},
 			}
 		);
@@ -53,21 +54,6 @@ const AppContent = () => {
 				<button type='submit'>Send</button>
 			</form>
 		</div>
-	);
-};
-
-const App = () => {
-	const [trpcClient] = useState(() =>
-		trpc.createClient({
-			url: 'http://localhost:3001/trpc',
-		})
-	);
-	return (
-		<trpc.Provider client={trpcClient} queryClient={client}>
-			<QueryClientProvider client={client}>
-				<AppContent />
-			</QueryClientProvider>
-		</trpc.Provider>
 	);
 };
 
