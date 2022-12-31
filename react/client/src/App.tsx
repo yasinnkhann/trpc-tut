@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { trpc } from './utils/trpc';
 
-const App = () => {
+export function App() {
 	const utils = trpc.useContext();
 
 	const [user, setUser] = useState('');
 	const [message, setMessage] = useState('');
 
-	const hello = trpc.useQuery(['hello']);
-	const getMessages = trpc.useQuery(['get-messages']);
-
-	const addMessage = trpc.useMutation(['add-message']);
+	const hello = trpc.hello.useQuery();
+	const getMessages = trpc['get-messages'].useQuery();
+	const addMessage = trpc['add-messages'].useMutation();
 
 	const handleAddMessage = (e: any) => {
 		e.preventDefault();
@@ -20,19 +19,22 @@ const App = () => {
 				message,
 			},
 			{
-				onSuccess: () => {
-					utils.invalidateQueries(['get-messages']);
+				onSuccess: data => {
+					console.log('SUCCESS: ', data);
+					utils['get-messages'].invalidate();
 				},
 			}
 		);
 	};
 
+	if (!hello.data) return <div>Loading...</div>;
+
 	return (
 		<div style={{ textAlign: 'center' }}>
-			<p>{JSON.stringify(hello.data)}</p>
-			{(getMessages.data ?? []).map((row: any, idx: number) => (
+			<p>{hello.data}</p>
+			{(getMessages.data ?? []).map((ChatMsg, idx: number) => (
 				<div key={idx}>
-					<p>{JSON.stringify(row)}</p>
+					<p>{JSON.stringify(ChatMsg)}</p>
 				</div>
 			))}
 
@@ -53,6 +55,6 @@ const App = () => {
 			</form>
 		</div>
 	);
-};
+}
 
 export default App;
