@@ -1,9 +1,10 @@
-import { inferAsyncReturnType, initTRPC } from '@trpc/server';
+import { initTRPC } from '@trpc/server';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import express from 'express';
 import cors from 'cors';
 import { z } from 'zod';
 import superjson from 'superjson';
+import { TContext, createContext } from './context';
 
 interface ChatMessage {
 	user: string;
@@ -18,29 +19,20 @@ const messages: ChatMessage[] = [
 	{ user: 'user5', message: 'Bonjour' },
 ];
 
-const createContext = ({
-	req,
-	res,
-}: trpcExpress.CreateExpressContextOptions) => ({ req, res });
-
-export type Context = inferAsyncReturnType<typeof createContext>;
-
-const t = initTRPC.context<Context>().create({
+const t = initTRPC.context<TContext>().create({
 	transformer: superjson,
 	errorFormatter({ shape }) {
 		return shape;
 	},
 });
 
-export const router = t.router;
+export const tRouter = t.router;
 
 export const publicProcedure = t.procedure;
 
-export const middleware = t.middleware;
+export const tMiddleware = t.middleware;
 
-export const mergeRouters = t.mergeRouters;
-
-const appRouter = router({
+const appRouter = tRouter({
 	hello: publicProcedure.output(z.string()).query(async () => {
 		// exists at: baseURL()/api/trpc/hello
 		return 'Hello from trpc!!';
