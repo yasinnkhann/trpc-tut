@@ -10,8 +10,11 @@ export function App() {
 	const hello = trpc.hello.useQuery();
 	const getMessages = trpc['get-messages'].useQuery();
 	const addMessage = trpc['add-messages'].useMutation();
+	const checkAuth = trpc['check-auth'].useQuery();
 
-	const handleAddMessage = (e: any) => {
+	console.log('CHECK AUTH: ', checkAuth.data);
+
+	const handleAddMessage = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		addMessage.mutate(
 			{
@@ -22,12 +25,14 @@ export function App() {
 				onSuccess: data => {
 					console.log('SUCCESS: ', data);
 					utils['get-messages'].invalidate();
+					// // or
+					// getMessages.refetch();
 				},
 			}
 		);
 	};
 
-	if (!hello.data) return <div>Loading...</div>;
+	if (!hello.data || !getMessages.data) return <div>Loading...</div>;
 
 	return (
 		<div style={{ textAlign: 'center' }}>

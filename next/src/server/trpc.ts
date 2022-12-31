@@ -20,7 +20,6 @@ const isAuthed = t.middleware(({ next, ctx }) => {
 	});
 });
 
-export const middleware = t.middleware;
 export const router = t.router;
 
 /**

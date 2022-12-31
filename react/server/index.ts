@@ -1,10 +1,10 @@
-import { initTRPC } from '@trpc/server';
+import { TRPCError, initTRPC } from '@trpc/server';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import express from 'express';
 import cors from 'cors';
 import { z } from 'zod';
-import superjson from 'superjson';
 import { TContext, createContext } from './context';
+import superjson from 'superjson';
 
 interface ChatMessage {
 	user: string;
@@ -26,18 +26,26 @@ const t = initTRPC.context<TContext>().create({
 	},
 });
 
+const isAuthed = t.middleware(({ next, ctx }) => {
+	if (2 + 2 !== 4) {
+		throw new TRPCError({
+			code: 'UNAUTHORIZED',
+		});
+	}
+	return next();
+});
+
 export const tRouter = t.router;
 
 export const publicProcedure = t.procedure;
 
-export const tMiddleware = t.middleware;
+export const protectedProcedure = t.procedure.use(isAuthed);
 
 const appRouter = tRouter({
 	hello: publicProcedure.output(z.string()).query(async () => {
 		// exists at: baseURL()/api/trpc/hello
 		return 'Hello from trpc!!';
 	}),
-
 	'get-messages': publicProcedure
 		.output((value: unknown) => {
 			if (value && typeof value === typeof messages) {
@@ -50,7 +58,6 @@ const appRouter = tRouter({
 		.query(({ input }) => {
 			return messages.slice(-input);
 		}),
-
 	'add-messages': publicProcedure
 		.output((value: unknown) => {
 			if (
@@ -66,6 +73,9 @@ const appRouter = tRouter({
 			messages.push(input);
 			return input;
 		}),
+	'check-auth': protectedProcedure.output(z.string()).query(async () => {
+		return 'You are authorized to see this!';
+	}),
 });
 
 export type AppRouter = typeof appRouter;
