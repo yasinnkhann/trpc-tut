@@ -94,7 +94,7 @@ app.use(
 	})
 );
 
-app.get('/', (_req, res) => {
+app.get('/', (req, res) => {
 	res.send('Hello from server!!!');
 });
 

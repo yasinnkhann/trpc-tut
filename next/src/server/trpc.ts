@@ -4,11 +4,15 @@ import superjson from 'superjson';
 
 const t = initTRPC.context<TContext>().create({
 	transformer: superjson,
+	errorFormatter({ shape }) {
+		return shape;
+	},
 });
 
 const isAuthed = t.middleware(({ next, ctx }) => {
-	if (!ctx.session?.user?.email) {
+	if (!ctx.session) {
 		throw new TRPCError({
+			message: 'No session detected.',
 			code: 'UNAUTHORIZED',
 		});
 	}
@@ -20,7 +24,7 @@ const isAuthed = t.middleware(({ next, ctx }) => {
 	});
 });
 
-export const router = t.router;
+export const tRouter = t.router;
 
 /**
  * Unprotected procedure

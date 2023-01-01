@@ -1,8 +1,8 @@
-import { router } from '../trpc';
+import { tRouter } from '../trpc';
 import { exampleRouter } from './example';
 import { postRouter } from './post';
 
-export const appRouter = router({
+export const appRouter = tRouter({
 	example: exampleRouter,
 	post: postRouter,
 });

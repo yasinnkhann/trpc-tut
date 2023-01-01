@@ -9,12 +9,15 @@ export default function IndexPage() {
 		description: '',
 	});
 
-	const hello = trpc.example.hello.useQuery({ text: 'yasin' });
+	const hello = trpc.example.hello.useQuery({ text: 'homie' });
 	const getPosts = trpc.post['get-all'].useQuery();
 	const createPost = trpc.post['create-one'].useMutation();
 	const updatePost = trpc.post['update-one'].useMutation();
 	const deletePost = trpc.post['delete-one'].useMutation();
 	const deleteAllPosts = trpc.post['delete-all'].useMutation();
+	const checkAuth = trpc.example['check-auth'].useQuery();
+
+	console.log('CHECK AUTH: ', checkAuth.data);
 
 	if (!hello.data || !getPosts.data) {
 		return <div>Loading...</div>;
@@ -69,7 +72,6 @@ export default function IndexPage() {
 			{
 				onSuccess: () => {
 					getPosts.refetch();
-					// utils.invalidateQueries(['posts.get-all']);
 				},
 			}
 		);

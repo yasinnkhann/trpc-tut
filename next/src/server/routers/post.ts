@@ -1,7 +1,7 @@
-import { router, publicProcedure } from '../trpc';
+import { tRouter, publicProcedure } from '../trpc';
 import { z } from 'zod';
 
-export const postRouter = router({
+export const postRouter = tRouter({
 	'get-all': publicProcedure.query(async ({ ctx }) => {
 		return await ctx.prisma.post.findMany();
 	}),
